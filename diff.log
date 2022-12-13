@@ -1,0 +1,25 @@
+Files ./appinfo/info.xml and ../aanvragen/appinfo/info.xml differ
+Only in ../aanvragen/appinfo: _links
+Files ./appinfo/routes.php and ../aanvragen/appinfo/routes.php differ
+Only in ./: build
+Files ./composer.lock and ../aanvragen/composer.lock differ
+Only in ./: diff.log
+Only in ./: .eslintrc.js
+Only in ../aanvragen/: .eslintrc.json
+Only in ./: .gitattributes
+Only in ./: .github
+Files ./.gitignore and ../aanvragen/.gitignore differ
+Files ./img/app.svg and ../aanvragen/img/app.svg differ
+Only in ../aanvragen/js: aanvragen-main.js
+Only in ../aanvragen/js: aanvragen-main.js.LICENSE.txt
+Only in ../aanvragen/js: aanvragen-main.js.map
+Only in ./js: notestutorial-main.js
+Only in ./js: notestutorial-main.js.LICENSE.txt
+Only in ./js: notestutorial-main.js.map
+Files ./lib/Migration/Version000007Date20220126.php and ../aanvragen/lib/Migration/Version000007Date20220126.php differ
+Only in ../aanvragen/: _links
+Files ./package.json and ../aanvragen/package.json differ
+Files ./package-lock.json and ../aanvragen/package-lock.json differ
+Only in ./: .php_cs.dist
+Only in ./: vendor
+Only in ../aanvragen/: webpack.js
