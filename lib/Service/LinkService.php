@@ -27,12 +27,17 @@ class LinkService {
 
 	public function vindJouwCategorieen(string $wie): array {
 		//throw new \Exception( "Vind reservaties van $wie" );
-		return $this->mapper->findAll($wie);
+		return $this->mapper->findAllJouw($wie);
 	}
 
-	public function findPerCategorie($categorie, $wie): array {
+	public function findPerCategorie($categorie, $wie, $groep): array {
 		//throw new \Exception( "Vind reservaties van $wie" );
-		return $this->mapper->findPerCategorie($categorie, $wie);
+		return $this->mapper->findPerCategorie($categorie, $wie, $groep);
+	}
+
+	public function findAfgeschermde($categorie, $wie, $groep): array {
+		//throw new \Exception( "Vind reservaties van $wie" );
+		return $this->mapper->findPerCategorie($categorie, $wie, $groep);
 	}
 
 

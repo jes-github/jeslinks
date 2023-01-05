@@ -10,6 +10,8 @@ use OCP\IRequest;
 use OCP\Notification\INotification;
 use OCP\Notification\IManager;
 
+use OCA\Jeslinks\Service\UitconfigService;
+
 
 
 class LinkController extends Controller {
@@ -23,18 +25,23 @@ class LinkController extends Controller {
 
 	public function __construct(IRequest $request,
 								LinkService $service,
+								UitconfigService $service2,
 								$userId) {
 		parent::__construct(Application::APP_ID, $request);
 		$this->service = $service;
+		$this->service2 = $service2;
 		$this->userId = $userId;
 	}
 
+	
 	/**
 	 * @NoAdminRequired
 	 */
 	public function index(): DataResponse {
+		$wieAr = $this->service2->getSystemValue('jeslinks');
+		$wie = $wieAr['wie'];
 		//throw new \Exception( "Controller op $userId");
-		return new DataResponse($this->service->vindCategorieen('JES'));
+		return new DataResponse($this->service->vindCategorieen($wie));
 	}
 
 	/**
@@ -45,12 +52,30 @@ class LinkController extends Controller {
 		return new DataResponse($this->service->vindJouwCategorieen($this->userId));
 	}
 
-    /**
+	/**
 	 * @NoAdminRequired
 	 */
-	public function percategorie($categorie, $wie): DataResponse {
+	public function werklinks($wie): DataResponse {
+		$groep = 'afgeschermd';
+		//throw new \Exception( "Controller op $userId" );
+		return new DataResponse($this->service->findPerCategorie('werklink', $wie, $groep));
+	}
+    
+	/**
+	 * @NoAdminRequired
+	 */
+	public function afgeschermde($wie): DataResponse {
+		$groep = 'afgeschermd';
+		//throw new \Exception( "Controller op $userId" );
+		return new DataResponse($this->service->findAfgeschermde('werklink', $wie, $groep));
+	}
+	
+	/**
+	 * @NoAdminRequired
+	 */
+	public function percategorie($categorie, $wie, $groep): DataResponse {
 		//throw new \Exception( "Controller op $categorie" );
-		return new DataResponse($this->service->findPerCategorie($categorie, $wie));
+		return new DataResponse($this->service->findPerCategorie($categorie, $wie, $groep));
 	}
 
 

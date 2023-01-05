@@ -15,8 +15,7 @@
 						<AppNavigationItem v-for="pnote in AanvraagPAr"
 							:key="pnote.id"
 							:title="pnote.voornaam + ' ' + pnote.achternaam"
-							:class="{active: currentNoteId === pnote.id, rood: pnote.uid === null}"
-							@click="alleMaandenVan(pnote.emailinvoer, pnote.voornaam + ' ' + pnote.achternaam)">
+							@click="toonWLinksVan(pnote.uid)">
 						</AppNavigationItem>
 					</ul>
 				</div>
@@ -24,11 +23,16 @@
 					JES links
 				</h2>
 				<ul>
+					<AppNavigationItem
+						title="Afgeschermde werklinks"
+						class="werklinknavM"
+						@click="toonWLinks()">
+					</AppNavigationItem>
 					<AppNavigationItem v-for="note in AanvraagAr"
 						:key="note.id"
 						:title="(note.categorie + ' - ' + note.wie)"
 						:class="{active: currentNoteId === note.id}"
-						@click="toonLinks(note.categorie, 'JES', 'jeslinks')">
+						@click="toonLinks(note.categorie, JESL, 'jeslinks')">
 					</AppNavigationItem>
 				</ul>
 				<AppNavigationNew v-if="(isAdmin && AanvraagAr.length === 0)"
@@ -59,13 +63,13 @@
 				<AppNavigationSettings title="meer">
 					<ul>
 						<AppNavigationItem
-							title="meer uitleg"
-							@click="uitleg">
+							title="sleutel op jeslinks.config"
+							@click="toonConfigWLinks">
 							<template slot="actions">
 								<ActionButton
 									icon="icon-info"
-									@click="uitleg">
-									Meer uitleg
+									@click="toonConfigWLinks">
+									Werklinks van JESL
 								</ActionButton>
 							</template>
 						</AppNavigationItem>
@@ -110,7 +114,6 @@
 						v-model="currentPNote.categorie"
 						type="text"
 						placeholder="Een categorie voor de link"
-						@change="isCat('persoonlijk')"
 						:disabled="updating">
 					<input ref="groep"
 						v-model="currentPNote.groep"
@@ -122,6 +125,11 @@
 						value="Opslaan"
 						:disabled="updating || !savePPossible"
 						@click="savePNote">
+					<input type="button"
+						class="secondary"
+						value="Annuleren"
+						:disabled="updating || !savePPossible"
+						@click="cancelPNote">
 				</div>
 			</div>
 			<div v-if="(currentNote && lengteAr >= 1 && jesAdmin && Jlinks)"
@@ -147,23 +155,74 @@
 						placeholder="Een naam voor de link"
 						:disabled="updating">
 					<input v-model="currentNote.pasw"
-						type="text"
+						type="hidden"
 						placeholder="een eventueel paswoord"
 						:disabled="updating">
 					<input v-model="currentNote.categorie"
-						@change="isCat('jeslinks')"
 						type="text"
 						placeholder="Een categorie voor de link"
 						:disabled="updating">
 					<input v-model="currentNote.groep"
-						type="text"
+						type="hidden"
 						placeholder="Welke JES groep krijgt automatisch deze link"
+						value="iedereen"
 						:disabled="updating">
 					<input type="button"
 						class="primary"
 						value="Opslaan"
 						:disabled="updating || !savePossible"
 						@click="saveNote">
+					<input type="button"
+						class="secondary"
+						value="Annuleren"
+						:disabled="updating || !savePPossible"
+						@click="cancelJNote">
+				</div>
+			</div>
+			<div v-if="(currentWNote && lengteAr >= 1 && werkAdmin && TKlinks)"
+				class="vraagcontainer">
+				<div class="in-takenvak">
+					<h3>Een afgeschermde link aanmaken:</h3>
+					<input v-model.trim="currentWNote.wie"
+						type="text"
+						placeholder="userId"
+						:disabled="updating">
+					<input v-model="currentWNote.email"
+						type="text"
+						placeholder="email"
+						:disabled="updating">
+					<input ref="urlW"
+						v-model="currentWNote.url"
+						type="text"
+						placeholder="De link/url"
+						:disabled="updating">
+					<input ref="naam"
+						v-model="currentWNote.naam"
+						type="text"
+						placeholder="Een naam voor de link"
+						:disabled="updating">
+					<input v-model="currentWNote.pasw"
+						type="password"
+						placeholder="een eventueel paswoord"
+						:disabled="updating">
+					<input v-model="currentWNote.categorie"
+						type="text"
+						placeholder="Een categorie voor de link"
+						:disabled="updating">
+					<input v-model="currentWNote.groep"
+						type="hidden"
+						placeholder="Welke JES groep krijgt automatisch deze link"
+						:disabled="updating">
+					<input type="button"
+						class="primary"
+						value="Opslaan"
+						:disabled="updating || !saveWPossible"
+						@click="saveWNote">
+					<input type="button"
+						class="secondary"
+						value="Annuleren"
+						:disabled="updating || !saveWPossible"
+						@click="cancelWNote">
 				</div>
 			</div>
 			<div v-if="Jlinks"
@@ -180,11 +239,57 @@
 					:key="k"
 					class="linklijn">
 					<a :href="klik.url" target="_blank">{{ klik.naam }}</a>
+					<input type="button"
+						class="icon-clippy copknopje"
+						title="kopieer link naar klembord">
 					<input v-if="isAdmin"
 						type="button"
 						class="icon-delete delknopje"
 						@click="linkWeg(klik.id, 'jeslinks')">
 				</div>
+			</div>
+			<div v-if="TKlinks && isAdmin"
+				class="vraagcontainer">
+				<h3 class="h3inline">Werklinks toekennen aan...</h3>
+				<input v-if="isAdmin"
+					:disabled="false"
+					type="button"
+					text="Een JES-link toevoegen"
+					button-id="new-Aanvragen-button"
+					class="icon-add toevoegknopje"
+					@click="newWNote" />
+				<div v-for="(klak, t) in ToekenbaarAr"
+					:key="t"
+					class="linklijn">
+					{{ klak.naam }}
+				</div>
+			</div>
+			<div v-if="Wlinks"
+				class="vraagcontainer">
+				<h3 class="h3inline">Afgeschermde werk links: {{ gekozenWCategorie }}</h3>
+				<div v-for="(klik, k) in KlikbaarAr"
+					:key="k"
+					class="linklijn">
+					<a @click="naarWerklink(klik.url, klik.pasw)"
+						class="werklinknav">
+						{{ klik.naam }} - {{ nakijken(klik.naam) }}
+					</a>
+					<input v-if="isAdmin"
+						type="button"
+						class="icon-delete delknopje"
+						@click="linkWeg(klik.id, 'jeslinks')">
+				</div>
+				<form ref="wlform"
+					:action="formLink"
+					method="POST"
+					target="_blank">
+					<input v-model="formLink"
+						type="hidden"
+						name="delink" />
+					<input v-model="formPW"
+						type="hidden"
+						name="paswoord" />
+				</form>
 			</div>
 			<div v-if="Plinks"
 				class="vraagcontainer">
@@ -200,6 +305,11 @@
 					class="linklijn">
 					<a :href="klik.url" target="_blank">{{ klik.naam }}</a>
 					<input type="button"
+						class="icon-clippy copknopje"
+						title="kopieer link naar klembord"
+						@click="klembord(klik.url, $event)">
+					<input type="button"
+						title="Delete"
 						class="icon-delete delknopje"
 						@click="linkWeg(klik.id, 'persoonlijk')">
 				</div>
@@ -274,15 +384,18 @@ export default {
 			AanvraagAr: [],
 			AanvraagPAr: [],
 			AanvraagPrivAr: [],
+			AanvraagWerkAr: [],
 			WerkstaatAr: [],
 			KlikbaarAr: [],
+			ToekenbaarAr: [],
+			WatistoegekendAr: [],
 			SaldiAr: [],
 			PersoneelsInfoAr: [],
 			currentNoteId: null,
 			gekozenPCategorie: 'nieuwe categorie',
 			gekozenJCategorie: '',
 			currentPNoteId: null,
-			currentMateriaalId: null,
+			currentWNoteId: null,
 			updating: false,
 			updateWS: true,
 			loading: true,
@@ -307,6 +420,13 @@ export default {
 			uitlegTonen: false,
 			Plinks: false,
 			Jlinks: false,
+			Wlinks: false,
+			TKlinks: false,
+			formLink: '',
+			formPW: '',
+			JESL: '',
+			JESemail: '',
+			JESpasw: '',
 		}
 	},
 	computed: {
@@ -344,6 +464,18 @@ export default {
 		},
 
 		/**
+		 * Return the currently selected note object
+		 *
+		 * @return {object|null}
+		 */
+		 currentWNote() {
+			if (this.currentWNoteId === null) {
+				return null
+			}
+			return this.AanvraagWerkAr.find((note) => note.id === this.currentWNoteId)
+		},
+
+		/**
 		 * Returns true if a note is selected and its title is not empty
 		 *
 		 * @return {boolean}
@@ -352,9 +484,19 @@ export default {
 			return this.currentPNote
 		},
 
+		/**
+		 * Returns true if a note is selected and its title is not empty
+		 *
+		 * @return {boolean}
+		 */
+		 saveWPossible() {
+			return this.currentWNote
+		},
+
 	},
 	beforeMount() {
 		this.personeelsinfo()
+		this.uitconfig()
 	},
 	methods: {
 		close() {
@@ -362,9 +504,7 @@ export default {
 		},
 
 		/**
-		 * Create a new note and focus the note content field automatically
-		 * The note is not yet saved, therefore an id of -1 is used until it
-		 * has been persisted in the backend
+		 * Nieuwe jeslink voor iedereen
 		 */
 		newNote() {
 			this.currentNoteId = -1
@@ -372,33 +512,106 @@ export default {
 			this.jesAdmin = true
 			this.AanvraagAr.push({
 				id: -1,
-				wie: 'JES',
-				email: 'JES.instellingen@jes.be',
+				wie: this.JESL,
+				email: this.JESemail,
 				categorie: this.gekozenJCategorie,
+				groep: 'iedereen',
 			})
 			this.$nextTick(() => {
 				this.$refs.urlJ.focus()
 			})
 		},
 
+		nakijken(n) {
+			if (this.ToekenbaarAr.some(data => data.naam === n)) {
+				return 'toegekend'
+			} else {
+				return n + ' niet gevonden'
+			}
+		},
+
+		cancelJNote() {
+			this.AanvraagAr.splice(this.AanvraagAr.findIndex((note) => note.id === -1), 1)
+			this.currentoteId = null
+		},
+
+		naarWerklink(a, b) {
+			this.formLink = a
+			this.formPW = b
+			this.$nextTick(() => {
+				this.$refs.wlform.submit()
+				setTimeout(function() { this.blanco() }.bind(this), 1000)
+			})
+		},
+
+		blanco() {
+			this.formPW = ''
+		},
+
 		/**
-		 * Create a new note and focus the note content field automatically
-		 * The note is not yet saved, therefore an id of -1 is used until it
-		 * has been persisted in the backend
+		 * Niuwe favorietenlink -> prive
 		 */
 		newPNote() {
 			this.currentPNoteId = -1
 			this.priveAdmin = true
+			this.Plinks = true
 			this.jesAdmin = false
 			this.AanvraagPrivAr.push({
 				id: -1,
 				wie: this.uid,
 				email: this.emailPL,
 				categorie: this.gekozenPCategorie,
+				groep: 'prive',
 			})
 			this.$nextTick(() => {
 				this.$refs.url.focus()
 			})
+		},
+
+		cancelPNote() {
+			this.AanvraagPrivAr.splice(this.AanvraagPrivAr.findIndex((note) => note.id === -1), 1)
+			this.currentPNoteId = null
+		},
+
+		/**
+		 * Nieuwe werklink -> afgeschermd
+		**/
+		newWNote() {
+			this.currentWNoteId = -1
+			this.priveAdmin = false
+			this.Plinks = false
+			this.jesAdmin = false
+			this.werkAdmin = true
+			this.Wlinks = false
+			this.TKlinks = true
+			this.AanvraagWerkAr.push({
+				id: -1,
+				wie: this.JESL,
+				email: this.JESemail,
+				pasw: this.JESpasw,
+				categorie: 'werklink',
+				groep: 'afgeschermd',
+			})
+			this.$nextTick(() => {
+				this.$refs.urlW.focus()
+			})
+		},
+
+		cancelWNote() {
+			this.AanvraagWerkAr.splice(this.AanvraagWerkAr.findIndex((note) => note.id === -1), 1)
+			this.currentWNoteId = null
+		},
+		async uitconfig() {
+			try {
+				const response = await axios.get(generateUrl('/apps/jeslinks/uitconf'))
+				this.JESL = response.data.wie
+				this.JESemail = response.data.email
+				this.JESpasw = response.data.pasw
+				// showSuccess(this.JESL + ' - ' + this.JESpasw)
+			} catch (e) {
+				console.error(e)
+				showError('Kan geen configinfo vinden')
+			}
 		},
 
 		/**
@@ -411,15 +624,6 @@ export default {
 				this.createNote(this.currentNote, 'J')
 			} else {
 				this.updateNote(this.currentNote)
-			}
-		},
-
-		isCat(c) {
-			if (c === 'jeslinks') {
-				this.gekozenJCategorie = this.currentNote.categorie
-			}
-			if (c === 'persoonlijk') {
-				this.gekozenPCategorie = this.currentPNote.categorie
 			}
 		},
 
@@ -436,9 +640,17 @@ export default {
 			}
 		},
 
+		saveWNote() {
+			if (this.currentWNoteId === -1) {
+				this.createNote(this.currentWNote, 'W')
+			} else {
+				this.updateNote(this.currentWNote)
+			}
+		},
+
 		/**
-		 * Links opvragen van de gebruiker
-		 *
+		 * Links opvragen van de gebruiker voor het linkse zijmenu
+		 * De eigenaar van JES en werklinks is ingegeven via jes.config.php
 		 * @param {object} note Note object
 		 */
 		 async overzichtLinks() {
@@ -457,7 +669,7 @@ export default {
 		},
 
 		/**
-		 * Links opvragen van de gebruiker
+		 * Favorieten opvragen van de gebruiker voor het zijmenu links
 		 *
 		 * @param {object} note Note object
 		 */
@@ -475,26 +687,36 @@ export default {
 		},
 
 		/**
-		 * Links opvragen van de gebruiker
+		 * Links opvragen van de gebruiker voor midden
 		 *
 		 * @param {object} note Note object
 		 */
 		 async toonLinks(l, w, s) {
+			this.priveAdmin = false
+			this.jesAdmin = false
+			this.werkAdmin = false
 			const categorie = l
 			const wie = w
+			let groep
 			this.updating = true
 			if (s === 'jeslinks') {
 				this.gekozenJCategorie = categorie
 				this.Jlinks = true
 				this.Plinks = false
+				this.Wlinks = false
+				this.TKlinks = false
+				groep = 'iedereen'
 			}
 			if (s === 'persoonlijk') {
 				this.gekozenPCategorie = categorie
 				this.Jlinks = false
 				this.Plinks = true
+				this.Wlinks = false
+				this.TKlinks = false
+				groep = 'prive'
 			}
 			try {
-				const response = await axios.get(generateUrl(`/apps/jeslinks/links/categorie/${categorie}/${wie}`))
+				const response = await axios.get(generateUrl(`/apps/jeslinks/links/categorie/${categorie}/${wie}/${groep}`))
 				this.KlikbaarAr = response.data
 			} catch (e) {
 				console.error(e)
@@ -503,7 +725,73 @@ export default {
 			this.updating = false
 		},
 
-		 /**
+		/**
+		 * WerkLinks opvragen van de gebruiker voor midden
+		 *
+		 * @param {object} note Note object
+		 */
+		 async toonWLinks() {
+			const wie = this.uid
+			this.updating = true
+			this.Jlinks = false
+			this.Plinks = false
+			this.Wlinks = true
+			this.TKlinks = false
+			try {
+				const response = await axios.get(generateUrl(`/apps/jeslinks/links/werklink/${wie}`))
+				this.KlikbaarAr = response.data
+			} catch (e) {
+				console.error(e)
+				showError('Kan geen werklinks vinden')
+			}
+			this.updating = false
+		},
+
+		/**
+		 * WerkLinks opvragen personeelslid voor controle welke hij/zij heeft
+		 *
+		 * @param {object} note Note object
+		 */
+		 async toonWLinksVan(w) {
+			const wie = w
+			this.updating = true
+			this.Jlinks = false
+			this.Plinks = false
+			this.Wlinks = true
+			this.TKlinks = false
+			try {
+				const response = await axios.get(generateUrl(`/apps/jeslinks/links/werklink/${wie}`))
+				this.KlikbaarAr = response.data
+			} catch (e) {
+				console.error(e)
+				showError('Kan geen werklinks vinden')
+			}
+			this.updating = false
+		},
+
+		/**
+		 * WerkLinks opvragen van 'wie' via config: alle afgeschermde werklinks voor midden
+		 *
+		 * @param {object} note Note object
+		 */
+		 async toonConfigWLinks() {
+			const wie = this.JESL
+			this.updating = true
+			this.Jlinks = false
+			this.Plinks = false
+			this.Wlinks = false
+			this.TKlinks = true
+			try {
+				const response = await axios.get(generateUrl(`/apps/jeslinks/links/afgeschermd/${wie}`))
+				this.ToekenbaarAr = response.data
+			} catch (e) {
+				console.error(e)
+				showError('Kan geen werklinks vinden')
+			}
+			this.updating = false
+		},
+
+		/**
 		 * Create a new note by sending the information to the server
 		 *
 		 * @param {object} note Note object
@@ -523,7 +811,13 @@ export default {
 					index = this.AanvraagAr.findIndex((match) => match.id === this.currentNoteId)
 					this.$set(this.AanvraagAr, index, response.data)
 					this.currentNoteId = response.data.id
-					this.toonLinks(this.gekozenJCategorie, 'JES', 'jeslinks')
+					this.toonLinks(this.gekozenJCategorie, this.JESL, 'jeslinks')
+				}
+				if (s === 'W') {
+					index = this.AanvraagWerkAr.findIndex((match) => match.id === this.currentWNoteId)
+					this.$set(this.AanvraagWerkAr, index, response.data)
+					this.currentWNoteId = response.data.id
+					this.toonWLinks()
 				}
 			} catch (e) {
 				console.error(e)
@@ -655,6 +949,19 @@ export default {
 				this.toonLinks(this.gekozenPCategorie, this.uid, 'persoonlijk')
 			}
 			this.overzichtLinks()
+		},
+
+		async klembord(abo, e) {
+			if (e.shiftKey) {
+				window.location.href = abo
+			} else {
+				try {
+					await navigator.clipboard.writeText(abo)
+					showSuccess('Link naar klembord gekopieerd')
+				} catch ($e) {
+					showError('Kon de link niet kopiëren')
+				}
+			}
 		},
 
 		async melden(wa, co) {
@@ -975,14 +1282,14 @@ a:link{
 	font-weight: 700;
 	vertical-align: middle;
 	display: inline-block;
-	width: calc(100% - 50px);
+	width: calc(100% - 100px);
 }
 
 a:hover {
 	color: #ec6840;
 }
 
-.delknopje{
+.delknopje, .copknopje{
 	display: inline-block;
 }
 
@@ -1000,5 +1307,18 @@ a:hover {
 .h3inline{
 	display: inline-block;
 	vertical-align: middle;
+}
+
+.werklinknav{
+	color: #0068b5;
+	font-weight: 700;
+	vertical-align: middle;
+	display: inline-block;
+	width: calc(100% - 100px);
+}
+
+.werklinknavM{
+	color: #0068b5;
+	font-weight: 700;
 }
 </style>

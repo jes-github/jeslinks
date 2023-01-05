@@ -35,6 +35,26 @@ class LinkMapper extends QBMapper {
 		return $this->findEntity($qb);
 	}
 
+
+	/**
+	 * @param string $wie
+	 * @return array
+	 * alle favorieten van JES
+     */
+
+	 public function findAllJouw(string $wie): array {
+		//throw new \Exception( "Vind reservaties van $wie" );
+		/* @var $qb IQueryBuilder */
+		$groep = 'prive';
+        $qb = $this->db->getQueryBuilder();
+        $qb->select('*')
+			->from('jeslinks')
+			->where($qb->expr()->eq('wie', $qb->createNamedParameter($wie)))
+			->andWhere($qb->expr()->eq('groep', $qb->createNamedParameter($groep)))
+            ->groupBy('categorie')
+			->orderby('categorie', 'asc');
+			return $this->findEntities($qb);
+	}
 	/**
 	 * @param string $wie
 	 * @return array
@@ -44,14 +64,17 @@ class LinkMapper extends QBMapper {
 	public function findAll(string $wie): array {
 		//throw new \Exception( "Vind reservaties van $wie" );
 		/* @var $qb IQueryBuilder */
+		$groep = 'iedereen';
         $qb = $this->db->getQueryBuilder();
         $qb->select('*')
 			->from('jeslinks')
 			->where($qb->expr()->eq('wie', $qb->createNamedParameter($wie)))
+			->andWhere($qb->expr()->eq('groep', $qb->createNamedParameter($groep)))
             ->groupBy('categorie')
 			->orderby('categorie', 'asc');
 			return $this->findEntities($qb);
 	}
+
 
     /**
 	 * @param string $wie
@@ -60,7 +83,7 @@ class LinkMapper extends QBMapper {
 	 * alle favorieten van JES
      */
 
-	public function findPerCategorie($categorie, $wie): array {
+	public function findPerCategorie($categorie, $wie, $groep): array {
 		//throw new \Exception( "Vind reservaties van $wie" );
 		/* @var $qb IQueryBuilder */
         $qb = $this->db->getQueryBuilder();
@@ -68,6 +91,7 @@ class LinkMapper extends QBMapper {
 			->from('jeslinks')
 			->where($qb->expr()->eq('wie', $qb->createNamedParameter($wie)))
             ->andWhere($qb->expr()->eq('categorie', $qb->createNamedParameter($categorie)))
+			->andWhere($qb->expr()->eq('groep', $qb->createNamedParameter($groep)))
             ->orderby('naam', 'asc');
 			return $this->findEntities($qb);
 	}
