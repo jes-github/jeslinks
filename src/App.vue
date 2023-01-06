@@ -6,17 +6,23 @@
 					class="adminvakje">
 					<h2 class="titelAN">Enkel voor admin</h2>
 					<ul>
+						<h2 class="titelAN">Links geven aan...</h2>
 						<ActionInput
 							@change="perPersoon($event.target.value)"
 							icon="icon-search" />
 						<div style="width: 100%; display: block; margin-bottom: 10px;">
 						</div>
-						<h2 class="titelAN">Links geven aan...</h2>
 						<AppNavigationItem v-for="pnote in AanvraagPAr"
 							:key="pnote.id"
 							:title="pnote.voornaam + ' ' + pnote.achternaam"
-							@click="toonWLinksVan(pnote.uid)">
+							@click="toonWLinksVan(pnote.uid, pnote.emailinvoer)">
 						</AppNavigationItem>
+						<AppNavigationNew v-if="isAdmin"
+							text="Afgeschermde werklink aanmaken"
+							title="Afgeschermde werklink aanmaken"
+							button-class="icon-add"
+							@click="newWNote">
+						</AppNavigationNew>
 					</ul>
 				</div>
 				<h2 class="titelAN">
@@ -30,7 +36,7 @@
 					</AppNavigationItem>
 					<AppNavigationItem v-for="note in AanvraagAr"
 						:key="note.id"
-						:title="(note.categorie + ' - ' + note.wie)"
+						:title="note.categorie"
 						:class="{active: currentNoteId === note.id}"
 						@click="toonLinks(note.categorie, JESL, 'jeslinks')">
 					</AppNavigationItem>
@@ -63,13 +69,13 @@
 				<AppNavigationSettings title="meer">
 					<ul>
 						<AppNavigationItem
-							title="sleutel op jeslinks.config"
-							@click="toonConfigWLinks">
+							title="eerst opvragen..."
+							@click="toekenbaar">
 							<template slot="actions">
 								<ActionButton
 									icon="icon-info"
 									@click="toonConfigWLinks">
-									Werklinks van JESL
+									dan tonen...
 								</ActionButton>
 							</template>
 						</AppNavigationItem>
@@ -179,16 +185,16 @@
 						@click="cancelJNote">
 				</div>
 			</div>
-			<div v-if="(currentWNote && lengteAr >= 1 && werkAdmin && TKlinks)"
+			<div v-if="(currentWNote && lengteAr >= 1 && werkAdmin && TKAlinks)"
 				class="vraagcontainer">
 				<div class="in-takenvak">
 					<h3>Een afgeschermde link aanmaken:</h3>
 					<input v-model.trim="currentWNote.wie"
-						type="text"
+						type="hidden"
 						placeholder="userId"
 						:disabled="updating">
 					<input v-model="currentWNote.email"
-						type="text"
+						type="hidden"
 						placeholder="email"
 						:disabled="updating">
 					<input ref="urlW"
@@ -205,13 +211,15 @@
 						type="password"
 						placeholder="een eventueel paswoord"
 						:disabled="updating">
+					<span>
+						Paswoord ingeven of standaard paswoord gebruiken
+					</span>
+					<br>
 					<input v-model="currentWNote.categorie"
-						type="text"
-						placeholder="Een categorie voor de link"
+						type="hidden"
 						:disabled="updating">
 					<input v-model="currentWNote.groep"
 						type="hidden"
-						placeholder="Welke JES groep krijgt automatisch deze link"
 						:disabled="updating">
 					<input type="button"
 						class="primary"
@@ -248,36 +256,40 @@
 						@click="linkWeg(klik.id, 'jeslinks')">
 				</div>
 			</div>
-			<div v-if="TKlinks && isAdmin"
+			<div v-if="TKlinks"
 				class="vraagcontainer">
-				<h3 class="h3inline">Werklinks toekennen aan...</h3>
-				<input v-if="isAdmin"
-					:disabled="false"
-					type="button"
-					text="Een JES-link toevoegen"
-					button-id="new-Aanvragen-button"
-					class="icon-add toevoegknopje"
-					@click="newWNote" />
-				<div v-for="(klak, t) in ToekenbaarAr"
-					:key="t"
+				<h3 class="h3inline">Afgeschermde werk links toekennen</h3>
+				<div v-for="(klik, k) in KlikbaarAr"
+					:key="k"
 					class="linklijn">
-					{{ klak.naam }}
+					<div class="naamlink">
+						{{ klik.naam }} {{ klik.id }}
+					</div>
+					{{ nakijken(klik.naam, k) }}
+					<input v-if="klik.opslagknop"
+						class="success toekenknop"
+						type="button"
+						style="display: inline"
+						value="Werklink schrappen"
+						@click="linkWeg(klik.teschrappen, 'TK')">
+					<input v-if="!klik.opslagknop"
+						class="primary toekenknop"
+						style="display: inline"
+						type="button"
+						value="Werklink toekennen"
+						@click="LinkBijVoor(k)">
 				</div>
 			</div>
 			<div v-if="Wlinks"
 				class="vraagcontainer">
-				<h3 class="h3inline">Afgeschermde werk links: {{ gekozenWCategorie }}</h3>
+				<h3 class="h3inline">Jouw afgeschermde werk links</h3>
 				<div v-for="(klik, k) in KlikbaarAr"
 					:key="k"
 					class="linklijn">
 					<a @click="naarWerklink(klik.url, klik.pasw)"
 						class="werklinknav">
-						{{ klik.naam }} - {{ nakijken(klik.naam) }}
+						{{ klik.naam }}
 					</a>
-					<input v-if="isAdmin"
-						type="button"
-						class="icon-delete delknopje"
-						@click="linkWeg(klik.id, 'jeslinks')">
 				</div>
 				<form ref="wlform"
 					:action="formLink"
@@ -314,7 +326,6 @@
 						@click="linkWeg(klik.id, 'persoonlijk')">
 				</div>
 			</div>
-
 		</AppContent>
 		<AppSidebar
 			v-show="show"
@@ -360,6 +371,7 @@ import { showError, showSuccess } from '@nextcloud/dialogs'
 import axios from '@nextcloud/axios'
 // import { emit } from '@nextcloud/event-bus'
 // cdimport NcButton from '@nextcloud/vue/dist/Components/NcButton'
+// import CheckboxRadioSwitch from '@nextcloud/vue/dist/Components/CheckboxRadioSwitch'
 
 export default {
 	name: 'App',
@@ -378,6 +390,7 @@ export default {
 		ActionInput,
 		// Multiselect,
 		// NcButton,
+		// CheckboxRadioSwitch,
 	},
 	data() {
 		return {
@@ -388,6 +401,7 @@ export default {
 			WerkstaatAr: [],
 			KlikbaarAr: [],
 			ToekenbaarAr: [],
+			BestaandeWLAr: [],
 			WatistoegekendAr: [],
 			SaldiAr: [],
 			PersoneelsInfoAr: [],
@@ -408,6 +422,7 @@ export default {
 			isAdmin: false,
 			toonTitel: 'Jouw Links',
 			emailPL: '',
+			emailVan: '',
 			priveAdmin: false,
 			jesAdmin: false,
 			uid: '',
@@ -422,11 +437,14 @@ export default {
 			Jlinks: false,
 			Wlinks: false,
 			TKlinks: false,
+			TKAlinks: false,
 			formLink: '',
 			formPW: '',
 			JESL: '',
 			JESemail: '',
 			JESpasw: '',
+			JESmagadmin: '',
+			werkenvoor: '',
 		}
 	},
 	computed: {
@@ -495,7 +513,6 @@ export default {
 
 	},
 	beforeMount() {
-		this.personeelsinfo()
 		this.uitconfig()
 	},
 	methods: {
@@ -520,14 +537,6 @@ export default {
 			this.$nextTick(() => {
 				this.$refs.urlJ.focus()
 			})
-		},
-
-		nakijken(n) {
-			if (this.ToekenbaarAr.some(data => data.naam === n)) {
-				return 'toegekend'
-			} else {
-				return n + ' niet gevonden'
-			}
 		},
 
 		cancelJNote() {
@@ -583,7 +592,8 @@ export default {
 			this.jesAdmin = false
 			this.werkAdmin = true
 			this.Wlinks = false
-			this.TKlinks = true
+			this.TKlinks = false
+			this.TKAlinks = true
 			this.AanvraagWerkAr.push({
 				id: -1,
 				wie: this.JESL,
@@ -607,11 +617,13 @@ export default {
 				this.JESL = response.data.wie
 				this.JESemail = response.data.email
 				this.JESpasw = response.data.pasw
+				this.JESmagadmin = response.data.admin
 				// showSuccess(this.JESL + ' - ' + this.JESpasw)
 			} catch (e) {
 				console.error(e)
 				showError('Kan geen configinfo vinden')
 			}
+			this.personeelsinfo()
 		},
 
 		/**
@@ -752,16 +764,19 @@ export default {
 		 *
 		 * @param {object} note Note object
 		 */
-		 async toonWLinksVan(w) {
+		 async toonWLinksVan(w, e) {
 			const wie = w
+			this.emailVan = e
+			this.werkenvoor = w
 			this.updating = true
 			this.Jlinks = false
 			this.Plinks = false
-			this.Wlinks = true
-			this.TKlinks = false
+			this.Wlinks = false
+			this.TKlinks = true
 			try {
 				const response = await axios.get(generateUrl(`/apps/jeslinks/links/werklink/${wie}`))
-				this.KlikbaarAr = response.data
+				this.WatistoegekendAr = response.data
+				this.KlikbaarAr = this.ToekenbaarAr
 			} catch (e) {
 				console.error(e)
 				showError('Kan geen werklinks vinden')
@@ -769,18 +784,37 @@ export default {
 			this.updating = false
 		},
 
+		nakijken(n, w) {
+			if (this.WatistoegekendAr.some(data => data.naam === n)) {
+				const eid = this.WatistoegekendAr.find(x => x.naam === n).id
+				// showSuccess(eid)
+				this.$set(this.KlikbaarAr[w], 'opslagknop', true)
+				this.$set(this.KlikbaarAr[w], 'teschrappen', eid)
+			} else {
+				this.$set(this.KlikbaarAr[w], 'opslagknop', false)
+			}
+		},
+
+		async LinkBijVoor(rij) {
+			const note = { idwl: this.KlikbaarAr[rij].id, wie: this.werkenvoor, email: this.emailVan, url: this.KlikbaarAr[rij].url, naam: this.KlikbaarAr[rij].naam, categorie: this.KlikbaarAr[rij].categorie, pasw: this.KlikbaarAr[rij].pasw, groep: this.KlikbaarAr[rij].groep }
+			try {
+				await axios.put(generateUrl(`/apps/jeslinks/links/werklinkbij/${note.idwl}`), note)
+			} catch (e) {
+				console.error(e)
+				showError('Kan werklink niet aanmaken')
+			}
+			this.$nextTick(() => {
+				this.toonWLinksVan(this.werkenvoor, this.emailVan)
+			})
+		},
+
 		/**
 		 * WerkLinks opvragen van 'wie' via config: alle afgeschermde werklinks voor midden
 		 *
 		 * @param {object} note Note object
 		 */
-		 async toonConfigWLinks() {
+		 async toekenbaar() {
 			const wie = this.JESL
-			this.updating = true
-			this.Jlinks = false
-			this.Plinks = false
-			this.Wlinks = false
-			this.TKlinks = true
 			try {
 				const response = await axios.get(generateUrl(`/apps/jeslinks/links/afgeschermd/${wie}`))
 				this.ToekenbaarAr = response.data
@@ -789,6 +823,15 @@ export default {
 				showError('Kan geen werklinks vinden')
 			}
 			this.updating = false
+		},
+
+		toonConfigWLinks() {
+			this.updating = true
+			this.Jlinks = false
+			this.Plinks = false
+			this.Wlinks = false
+			this.TKlinks = true
+			this.BestaandeWLAr = this.ToekenbaarAr
 		},
 
 		/**
@@ -817,7 +860,10 @@ export default {
 					index = this.AanvraagWerkAr.findIndex((match) => match.id === this.currentWNoteId)
 					this.$set(this.AanvraagWerkAr, index, response.data)
 					this.currentWNoteId = response.data.id
-					this.toonWLinks()
+					this.werkAdmin = false
+					this.TKAlinks = false
+					this.toekenbaar()
+					showSuccess('Afgeschermde Link is aangemaakt')
 				}
 			} catch (e) {
 				console.error(e)
@@ -892,6 +938,7 @@ export default {
 			// this.teamleidersinfo(this.PersoneelsInfoAr[0].teamid)
 			this.isPLadmin(this.uid)
 			this.overzichtLinks()
+			this.toekenbaar()
 		},
 
 		/**
@@ -899,7 +946,7 @@ export default {
 	 	*/
 		 async isPLadmin(w) {
 			const wie = w
-			const groep = 'admin'
+			const groep = this.JESmagadmin
 			try {
 				const response = await axios.get(generateUrl(`/apps/personeelsadmin/ingroepen/zoek/${wie}/${groep}`))
 				response.data[0] === 'ingroep' ? this.isAdmin = true : this.isAdmin = false
@@ -948,7 +995,10 @@ export default {
 			if (w === 'persoonlijk') {
 				this.toonLinks(this.gekozenPCategorie, this.uid, 'persoonlijk')
 			}
-			this.overzichtLinks()
+			if (w === 'TK') {
+				this.toonWLinksVan(this.werkenvoor, this.emailVan)
+			}
+			// this.overzichtLinks()
 		},
 
 		async klembord(abo, e) {
@@ -1320,5 +1370,26 @@ a:hover {
 .werklinknavM{
 	color: #0068b5;
 	font-weight: 700;
+}
+
+.naamlink{
+	color: #0068b5;
+	font-weight: 700;
+	vertical-align: middle;
+	display: inline-block;
+	width: calc(100% - 190px);
+}
+
+.toekenknop{
+	width: 180px;
+}
+
+.success{
+	background-color: #d2e8a5;
+	border: #d2e8a5;
+}
+
+.success:hover{
+	background-color: #eafacb;
 }
 </style>

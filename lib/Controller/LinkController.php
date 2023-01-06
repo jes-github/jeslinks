@@ -119,7 +119,14 @@ class LinkController extends Controller {
 	public function create($wie, $email, $url, $naam, $pasw, $categorie, $groep): DataResponse {
 		return new DataResponse($this->service->create($wie, $email, $url, $naam, $pasw, $categorie, $groep));
 	}
-
+	
+	/**
+	 * @NoAdminRequired
+	 */
+	public function linkbij($wie, $email, $url, $naam, $pasw, $categorie, $groep, $idwl): DataResponse {
+		//throw new \Exception( "linkbij op $idwl en voor $wie" );
+		return new DataResponse($this->service->create($wie, $email, $url, $naam, $pasw, $categorie, $groep));
+	}
 
 	/**
 	 * @NoAdminRequired

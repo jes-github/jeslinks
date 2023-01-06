@@ -9,6 +9,7 @@ return [
 		['name' => 'page#index', 'url' => '/', 'verb' => 'GET'],
 		['name' => 'link#jouwlinks', 'url' => '/links/eigenlinks', 'verb' => 'GET'],
 		['name' => 'link#percategorie', 'url' => '/links/categorie/{categorie}/{wie}/{groep}', 'verb' => 'GET'],
+		['name' => 'link#linkbij', 'url' => '/links/werklinkbij/{note}', 'verb' => 'PUT'],
 		['name' => 'link#werklinks', 'url' => '/links/werklink/{wie}', 'verb' => 'GET'],
 		['name' => 'link#afgeschermde', 'url' => '/links/afgeschermd/{wie}', 'verb' => 'GET'],
 		['name' => 'werkdag#zoeken', 'url' => '/werkstaten/zoeken/{cat}/{wie}/{dagenAr}', 'verb' => 'GET'],
