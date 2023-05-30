@@ -248,6 +248,7 @@
 					class="linklijn">
 					<a :href="klik.url" target="_blank">{{ klik.naam }}</a>
 					<input type="button"
+						@click="klembord(klik.url, $event)"
 						class="icon-clippy copknopje"
 						title="kopieer link naar klembord">
 					<input v-if="isAdmin"
@@ -291,7 +292,8 @@
 						{{ klik.naam }}
 					</a>
 				</div>
-				<form ref="wlform"
+				<form v-if="formAan"
+					ref="wlform"
 					:action="formLink"
 					method="POST"
 					target="_blank">
@@ -301,6 +303,14 @@
 					<input v-model="formPW"
 						type="hidden"
 						name="paswoord" />
+					<input v-model="formEm"
+						type="hidden"
+						name="email" />
+					<input type="hidden"
+						value="TOOB"
+						name="codepas" />
+					<input type="submit"
+						value="test" />
 				</form>
 			</div>
 			<div v-if="Plinks"
@@ -422,6 +432,7 @@ export default {
 			isAdmin: false,
 			toonTitel: 'Jouw Links',
 			emailPL: '',
+			formAan: false,
 			emailVan: '',
 			priveAdmin: false,
 			jesAdmin: false,
@@ -545,8 +556,10 @@ export default {
 		},
 
 		naarWerklink(a, b) {
+			this.formAan = true
 			this.formLink = a
 			this.formPW = b
+			this.formEm = this.emailPL
 			this.$nextTick(() => {
 				this.$refs.wlform.submit()
 				setTimeout(function() { this.blanco() }.bind(this), 1000)
@@ -555,6 +568,7 @@ export default {
 
 		blanco() {
 			this.formPW = ''
+			this.formAan = false
 		},
 
 		/**
@@ -615,7 +629,6 @@ export default {
 			try {
 				const response = await axios.get(generateUrl('/apps/jeslinks/uitconf'))
 				this.JESL = response.data.wie
-				this.JESemail = response.data.email
 				this.JESpasw = response.data.pasw
 				this.JESmagadmin = response.data.admin
 				// showSuccess(this.JESL + ' - ' + this.JESpasw)
@@ -1113,7 +1126,7 @@ td{
 }
 
 .opzij{
-	display: block;
+	display: block !important;
 	margin-left: 12px;
 	position: relative;
 }
