@@ -22,11 +22,13 @@ class PageController extends Controller {
 	public function index() {
 		Util::addScript(Application::APP_ID, 'jeslinks-main');
 		Util::addStyle($this->appName, 'icons');
-		$test = new TemplateResponse(Application::APP_ID, 'main');
+		return new TemplateResponse(Application::APP_ID, 'main');
+		/*
 		$csp = new EmptyContentSecurityPolicy();
         $csp->addAllowedFormActionDomain('https://mijnplaats.jes.be');
 		$test->setEmptyContentSecurityPolicy($csp);
 		return $test;
+		*/
 	}
 
 
