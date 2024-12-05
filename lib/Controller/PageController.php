@@ -28,6 +28,7 @@ class PageController extends Controller {
 		$retour = new TemplateResponse(Application::APP_ID, 'main');
 		$policy = new ContentSecurityPolicy();
 		$policy->addAllowedFormActionDomain('https://mijnplaats.jes.be');
+		$policy->addAllowedFormActionDomain('https://werklinks.jes.be');
 		$retour->setContentSecurityPolicy($policy);
 		//Util::addAllowedFormActionDomain('https://mijnplaats.jes.be');
 		return $retour;
