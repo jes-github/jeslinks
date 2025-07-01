@@ -1,6 +1,6 @@
 <template>
-	<Content id="content" class="app-Werkstaat">
-		<AppNavigation>
+	<NcContent app-name="jeslinks" class="app-Werkstaat">
+		<NcAppNavigation>
 			<div>
 				<div v-if="isAdmin"
 					class="adminvakje">
@@ -12,36 +12,36 @@
 							icon="icon-search" />
 						<div style="width: 100%; display: block; margin-bottom: 10px;">
 						</div>
-						<AppNavigationItem v-for="pnote in AanvraagPAr"
+						<NcAppNavigationItem v-for="pnote in AanvraagPAr"
 							:key="pnote.id"
 							:title="pnote.voornaam + ' ' + pnote.achternaam"
 							@click="toonWLinksVan(pnote.uid, pnote.emailinvoer)">
-						</AppNavigationItem>
-						<AppNavigationNew v-if="isAdmin"
+						</NcAppNavigationItem>
+						<NcAppNavigationNew v-if="isAdmin"
 							text="Afgeschermde werklink aanmaken"
 							title="Afgeschermde werklink aanmaken"
 							button-class="icon-add"
 							@click="newWNote">
-						</AppNavigationNew>
+						</NcAppNavigationNew>
 					</ul>
 				</div>
 				<h2 class="titelAN">
 					JES links
 				</h2>
 				<ul>
-					<AppNavigationItem
+					<NcAppNavigationItem
 						title="Afgeschermde werklinks"
 						class="werklinknavM"
 						@click="toonWLinks()">
-					</AppNavigationItem>
-					<AppNavigationItem v-for="note in AanvraagAr"
+					</NcAppNavigationItem>
+					<NcAppNavigationItem v-for="note in AanvraagAr"
 						:key="note.id"
 						:title="note.categorie"
 						:class="{active: currentNoteId === note.id}"
 						@click="toonLinks(note.categorie, JESL, 'jeslinks')">
-					</AppNavigationItem>
+					</NcAppNavigationItem>
 				</ul>
-				<AppNavigationNew v-if="(isAdmin && AanvraagAr.length === 0)"
+				<NcAppNavigationNew v-if="(isAdmin && AanvraagAr.length === 0)"
 					:disabled="false"
 					text="Een JES-link toevoegen"
 					button-id="new-Aanvragen-button"
@@ -51,14 +51,14 @@
 					Jouw favorieten
 				</h2>
 				<ul>
-					<AppNavigationItem v-for="notep in AanvraagPrivAr"
+					<NcAppNavigationItem v-for="notep in AanvraagPrivAr"
 						:key="notep.id"
 						:title="notep.categorie"
 						:class="{active: currentPNoteId === notep.id}"
 						@click="toonLinks(notep.categorie, notep.wie, 'persoonlijk')">
-					</AppNavigationItem>
+					</NcAppNavigationItem>
 				</ul>
-				<AppNavigationNew v-if="AanvraagPrivAr.length === 0"
+				<NcAppNavigationNew v-if="AanvraagPrivAr.length === 0"
 					text="Een link toevoegen"
 					:disabled="false"
 					button-id="new-Aanvragen-button"
@@ -66,9 +66,9 @@
 					@click="newPNote" />
 			</div>
 			<template #footer>
-				<AppNavigationSettings title="meer">
+				<NcAppNavigationSettings title="meer">
 					<ul>
-						<AppNavigationItem
+						<NcAppNavigationItem
 							title="eerst opvragen..."
 							@click="toekenbaar">
 							<template slot="actions">
@@ -78,12 +78,12 @@
 									dan tonen...
 								</ActionButton>
 							</template>
-						</AppNavigationItem>
+						</NcAppNavigationItem>
 					</ul>
-				</AppNavigationSettings>
+				</NcAppNavigationSettings>
 			</template>
-		</AppNavigation>
-		<AppContent>
+		</NcAppNavigation>
+		<NcAppContent>
 			<h1>
 				JES links en rechts...
 			</h1>
@@ -336,8 +336,8 @@
 						@click="linkWeg(klik.id, 'persoonlijk')">
 				</div>
 			</div>
-		</AppContent>
-		<AppSidebar
+		</NcAppContent>
+		<NcAppSidebar
 			v-show="show"
 			title="Reserveerbaar:"
 			@close="close">
@@ -346,7 +346,7 @@
 				style="margin-left:10px"
 				value="Toon enkel wat nog vrij is"
 				@click="nogbeschikbaar(gekozencat)">
-			<AppNavigationItem v-for="mat in MateriaalAr"
+			<NcAppNavigationItem v-for="mat in MateriaalAr"
 				@click="beschikbaar(mat.categorie, mat.id, mat.naam)"
 				:key="mat.id"
 				:title="mat.naam">
@@ -356,51 +356,50 @@
 						{{ mat.omschrijving }}
 					</ActionButton>
 				</template>
-			</AppNavigationItem>
-		</AppSidebar>
-	</Content>
+			</NcAppNavigationItem>
+		</NcAppSidebar>
+	</NcContent>
 </template>
 
 <script>
-import ActionButton from '@nextcloud/vue/dist/Components/ActionButton'
-import AppContent from '@nextcloud/vue/dist/Components/AppContent'
-import AppNavigation from '@nextcloud/vue/dist/Components/AppNavigation'
-import AppNavigationItem from '@nextcloud/vue/dist/Components/AppNavigationItem'
-import AppNavigationSettings from '@nextcloud/vue/dist/Components/AppNavigationSettings'
-import AppNavigationNew from '@nextcloud/vue/dist/Components/AppNavigationNew'
-import AppSidebar from '@nextcloud/vue/dist/Components/AppSidebar'
-// import UserBubble from '@nextcloud/vue/dist/Components/UserBubble'
-// import Actions from '@nextcloud/vue/dist/Components/Actions'
-// import ActionCheckbox from '@nextcloud/vue/dist/Components/ActionCheckbox'
-import ActionInput from '@nextcloud/vue/dist/Components/ActionInput'
-// import Multiselect from '@nextcloud/vue/dist/Components/Multiselect'
-// import DatetimePicker from '@nextcloud/vue/dist/Components/DatetimePicker'
+
+import {
+  NcContent,
+  NcAppNavigation,
+  NcAppContent,
+  NcAppNavigationItem,
+  NcAppNavigationSettings,
+  NcAppNavigationNew,
+  NcAppSidebar,
+  NcActionButton,
+  NcUserBubble,
+  NcActionInput
+} from '@nextcloud/vue'
+
 import '@nextcloud/dialogs/styles/toast.scss'
 import { generateUrl } from '@nextcloud/router'
 import { showError, showSuccess } from '@nextcloud/dialogs'
 import axios from '@nextcloud/axios'
-// import { emit } from '@nextcloud/event-bus'
-// cdimport NcButton from '@nextcloud/vue/dist/Components/NcButton'
-// import CheckboxRadioSwitch from '@nextcloud/vue/dist/Components/CheckboxRadioSwitch'
+
 
 export default {
 	name: 'App',
 	components: {
-		ActionButton,
-		AppContent,
-		AppNavigation,
-		AppSidebar,
-		AppNavigationItem,
-		AppNavigationSettings,
-		AppNavigationNew,
-		// UserBubble,
-		// DatetimePicker,
-		// Actions,
-		// ActionCheckbox,
-		ActionInput,
-		// Multiselect,
+		NcActionButton,
+		NcAppContent,
+		NcAppNavigation,
+		NcAppSidebar,
+		NcAppNavigationItem,
+		NcAppNavigationSettings,
+		NcAppNavigationNew,
+		// NcUserBubble,
+		// NcDatetimePicker,
+		// NcActions,
+		// NcActionCheckbox,
+		NcActionInput,
+		// NcMultiselect,
 		// NcButton,
-		// CheckboxRadioSwitch,
+		// NcCheckboxRadioSwitch,
 	},
 	data() {
 		return {
@@ -1039,370 +1038,4 @@ export default {
 	},
 }
 </script>
-<style scoped>
-#app-content > div {
-	width: 100%;
-	height: 100%;
-	padding: 20px;
-	display: flex;
-	flex-direction: column;
-	flex-grow: 1;
-}
 
-input[type='text'] {
-	width: 100%;
-}
-
-textarea {
-	flex-grow: 1;
-	width: 100%;
-}
-
-.test{
-	background-color: aqua;
-	width: 50px;
-	height: 50px;
-	position: relative;
-}
-
-h1{
-	text-align: center;
-	font-size: 22px;
-	font-weight: 500;
-	margin-top: 50px;
-	margin-bottom: 30px;
-}
-
-h2{
-	font-weight: 500;
-	margin-top: 10px;
-}
-
-.titelAN{
-	margin-left: 10px;
-}
-
-h3{
-	font-size: 20px;
-}
-
-.ics{
-	margin-top: 15px;
-}
-
-td{
-	padding-right: 15px;
-}
-
-.extraOpmerking{
-	margin-top: 50px;
-	border-top: 1px dotted;
-	padding-top: 15px;
-}
-
-.keuze{
-	text-align: center;
-}
-
-.in-takenvak{
-	padding: 2px 20px 20px 20px;
-	border: 1px dotted #999;
-	margin-bottom: 10px;
-}
-
-.vraagcontainer{
-	padding: 10px 50px 10px 50px;
-	max-width: 1200px;
-	margin: 0 auto 0 auto;
-}
-
-.hoger{
-	height: 80px;
-}
-
-.onder{
-	width: 100%;
-	display: block;
-}
-
-.opzij{
-	display: block !important;
-	margin-left: 12px;
-	position: relative;
-}
-
-.praktisch{
-	margin-bottom: 4px;
-	margin-top: 7px;
-}
-
-.waarschuwing{
-	color: crimson;
-}
-
-.isok{
-	color: rgb(25, 160, 137);
-}
-
-.opzij > div{
-	width: 313px;
-	position: relative;
-}
-
-.vet{
-	font-weight: bold;
-}
-
-.totalen{
-	text-align: right;
-	font-weight: bold;
-	padding-right: 5px;
-}
-
-.breed100{
-	display: block;
-	width: 100%;
-	border-bottom: 2px solid #999;
-	padding-bottom: 10px;
-	padding-top: 6px;
-	margin-bottom: 2px;
-}
-
-.groen{
-	border-right: 5px solid #acea56;
-}
-
-.rood{
-	border-right: 5px solid #ec6840;
-}
-
-.filterknop{
-	margin-bottom: 20px;
-	border-bottom: 0.5px solid #999;
-}
-
-#footer{
-	font-size: 10px;
-}
-
-.uren, .urenc{
-	display: inline-block;
-	min-width: 85px;
-	vertical-align: middle;
-}
-
-.urenc{
-	text-align: center;
-}
-
-.dagaanduiding{
-	width: 80px;
-	display: inline-block;
-	font-size: 12px;
-	text-align: right;
-	padding-right: 10px;
-	vertical-align: top;
-	font-weight: bold;
-}
-
-.saldo, .saldocl, .verwachtcl{
-	display: inline-block;
-	padding: 5px 20px 5px 20px;
-	margin: 0px -4px 0px;
-	min-height: 60px;
-	vertical-align: top;
-}
-
-.dagc{
-	width: 380px;
-	padding: 0px;
-	background-color: #F0F8FF;
-	margin: 0px -4px 0px;
-	display: inline-block;
-	min-height: 60px;
-}
-
-.dag{
-	display: block;
-	position: relative;
-	width: 380px;
-	padding: 5px 0px 5px 20px;
-	margin: 0px;
-	box-sizing: border-box;
-}
-
-.avond{
-	display: block;
-	position: relative;
-	background-color: #0068b5;
-	width: 377px;
-	padding: 5px 0px 5px 20px;
-	margin: 10px 0px 0px 0px;
-	box-sizing: border-box;
-	min-height: 60px;
-}
-
-.avondWS{
-	display: block;
-	position: relative;
-	background-color: #0068b5;
-	width: 377px;
-	padding: 5px 0px 5px 20px;
-	margin: 27px 0px 0px 0px;
-	box-sizing: border-box;
-	min-height: 61px;
-	color: #FFF;
-}
-
-.verwachtcl{
-	background-color: #cfe0a2;
-	width: 100px;
-}
-
-.saldocl{
-	background-color: #a9ddf3;
-	width: 100px;
-}
-
-.saldocl .uren, .verwachtcl .uren{
-	width: 70px;
-	margin-top: 7px;
-}
-
-.avond input{
-	background-color: #f3f3f3;
-}
-
-.saldo{
-	background-color: #e6f6c3;
-	width: 180px;
-}
-
-.pauze{
-	width: 40px;
-	display: inline-block;
-}
-
-.werkstaatlijn{
-	border-bottom: 0.5px solid #999;
-}
-
-.jescode {
-	width: 40px;
-}
-
-.saldo .multiselect{
-	min-width: 50px;
-	margin-right: 15px;
-}
-
-.saldo .multiselect__single{
-	padding: 0px 0px !important;
-	color:#ec6840;
-}
-
-.breed34{
-	width: 34px;
-	min-width: 34px;
-	height: 10px;
-	min-height: 10px;
-	background-color: rgba(200,200,200,0);
-	border: 0px;
-}
-
-.indagaanduiding{
-	display: block;
-	min-height: 60px;
-}
-
-.opslaanknop{
-	margin-left: 15px;
-	vertical-align: top;
-	margin-top: 9px;
-}
-
-.dblauw{
-	background-color: #0068b5;
-	height: 19px;
-}
-
-.app-navigation ul{
-	height: auto;
-}
-
-.fenevknoppen{
-	margin-top:20px;
-	margin-bottom: 15px;
-}
-
-.adminvakje{
-	border-bottom: 1px dotted #999;
-	padding-bottom: 10px;
-}
-
-a:link{
-	color: #0068b5;
-	font-weight: 700;
-	vertical-align: middle;
-	display: inline-block;
-	width: calc(100% - 100px);
-}
-
-a:hover {
-	color: #ec6840;
-}
-
-.delknopje, .copknopje{
-	display: inline-block;
-}
-
-.linklijn{
-	border-bottom: 1px dotted #999;
-	padding: 5px 0px 5px;
-	vertical-align: middle;
-}
-
-.toevoegknopje{
-	vertical-align: middle;
-	margin-left: 20px;
-}
-
-.h3inline{
-	display: inline-block;
-	vertical-align: middle;
-}
-
-.werklinknav{
-	color: #0068b5;
-	font-weight: 700;
-	vertical-align: middle;
-	display: inline-block;
-	width: calc(100% - 100px);
-}
-
-.werklinknavM{
-	color: #0068b5;
-	font-weight: 700;
-}
-
-.naamlink{
-	color: #0068b5;
-	font-weight: 700;
-	vertical-align: middle;
-	display: inline-block;
-	width: calc(100% - 190px);
-}
-
-.toekenknop{
-	width: 180px;
-}
-
-.success{
-	background-color: #d2e8a5;
-	border: #d2e8a5;
-}
-
-.success:hover{
-	background-color: #eafacb;
-}
-</style>
