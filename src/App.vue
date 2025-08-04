@@ -364,42 +364,45 @@
 <script>
 
 import {
-  NcContent,
-  NcAppNavigation,
-  NcAppContent,
-  NcAppNavigationItem,
-  NcAppNavigationSettings,
-  NcAppNavigationNew,
-  NcAppSidebar,
-  NcActionButton,
-  NcUserBubble,
-  NcActionInput
+	NcActionButton,
+	NcContent,
+	NcAppContent,
+	NcAppNavigation,
+	NcAppNavigationItem,
+	NcAppNavigationNew,
+	NcAppSidebar,
+	NcUserBubble,
+	NcActions,
+	NcActionCheckbox,
+	NcActionInput,
+	// NcMultiselect,
 } from '@nextcloud/vue'
 
 import '@nextcloud/dialogs/styles/toast.scss'
 import { generateUrl } from '@nextcloud/router'
 import { showError, showSuccess } from '@nextcloud/dialogs'
 import axios from '@nextcloud/axios'
-
+import { emit } from '@nextcloud/event-bus'
 
 export default {
 	name: 'App',
 	components: {
 		NcActionButton,
+		NcContent,
 		NcAppContent,
 		NcAppNavigation,
 		NcAppSidebar,
 		NcAppNavigationItem,
-		NcAppNavigationSettings,
 		NcAppNavigationNew,
-		// NcUserBubble,
-		// NcDatetimePicker,
-		// NcActions,
-		// NcActionCheckbox,
+		NcUserBubble,
+		NcActions,
+		NcActionCheckbox,
 		NcActionInput,
 		// NcMultiselect,
-		// NcButton,
-		// NcCheckboxRadioSwitch,
+		NcContent,
+  		NcAppNavigation,
+  		NcContent,
+  		NcAppSidebar,
 	},
 	data() {
 		return {
