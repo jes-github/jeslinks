@@ -15,6 +15,7 @@
 						<NcAppNavigationItem v-for="pnote in AanvraagPAr"
 							:key="pnote.id"
 							:title="pnote.voornaam + ' ' + pnote.achternaam"
+							:name="pnote.voornaam + ' ' + pnote.achternaam"
 							@click="toonWLinksVan(pnote.uid, pnote.emailinvoer)">
 						</NcAppNavigationItem>
 						<NcAppNavigationNew v-if="isAdmin"
@@ -37,6 +38,7 @@
 					<NcAppNavigationItem v-for="note in AanvraagAr"
 						:key="note.id"
 						:title="note.categorie"
+						:name="note.categorie"
 						:class="{active: currentNoteId === note.id}"
 						@click="toonLinks(note.categorie, JESL, 'jeslinks')">
 					</NcAppNavigationItem>
@@ -54,6 +56,7 @@
 					<NcAppNavigationItem v-for="notep in AanvraagPrivAr"
 						:key="notep.id"
 						:title="notep.categorie"
+						:name="notep.categorie"
 						:class="{active: currentPNoteId === notep.id}"
 						@click="toonLinks(notep.categorie, notep.wie, 'persoonlijk')">
 					</NcAppNavigationItem>
@@ -350,6 +353,7 @@
 				@click="beschikbaar(mat.categorie, mat.id, mat.naam)"
 				:key="mat.id"
 				:title="mat.naam">
+				:name="mat.naam"
 				<template slot="actions">
 					<ActionButton icon="icon-details"
 						@click="meerinfo(mat.omschrijving)">

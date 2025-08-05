@@ -16394,7 +16394,8 @@ var render = function render() {
     return _c("NcAppNavigationItem", {
       key: pnote.id,
       attrs: {
-        title: pnote.voornaam + " " + pnote.achternaam
+        title: pnote.voornaam + " " + pnote.achternaam,
+        name: pnote.voornaam + " " + pnote.achternaam
       },
       on: {
         click: function ($event) {
@@ -16430,7 +16431,8 @@ var render = function render() {
         active: _vm.currentNoteId === note.id
       },
       attrs: {
-        title: note.categorie
+        title: note.categorie,
+        name: note.categorie
       },
       on: {
         click: function ($event) {
@@ -16457,7 +16459,8 @@ var render = function render() {
         active: _vm.currentPNoteId === notep.id
       },
       attrs: {
-        title: notep.categorie
+        title: notep.categorie,
+        name: notep.categorie
       },
       on: {
         click: function ($event) {
@@ -17280,7 +17283,7 @@ var render = function render() {
           return _vm.beschikbaar(mat.categorie, mat.id, mat.naam);
         }
       }
-    }, [_c("template", {
+    }, [_vm._v('\n\t\t\t:name="mat.naam"\n\t\t\t'), _c("template", {
       slot: "actions"
     }, [_c("ActionButton", {
       attrs: {
@@ -157076,4 +157079,4 @@ vue__WEBPACK_IMPORTED_MODULE_2__["default"].mixin({
 
 /******/ })()
 ;
-//# sourceMappingURL=jeslinks-main.js.map?v=9ced7cc79f3542af5860
+//# sourceMappingURL=jeslinks-main.js.map?v=91118c50cde00ec16211
