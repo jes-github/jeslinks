@@ -32,6 +32,7 @@
 				<ul>
 					<NcAppNavigationItem
 						title="Afgeschermde werklinks"
+						name="Afgesschermde werklinks"
 						class="werklinknavM"
 						@click="toonWLinks()">
 					</NcAppNavigationItem>

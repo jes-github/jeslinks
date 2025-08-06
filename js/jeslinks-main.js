@@ -16417,7 +16417,8 @@ var render = function render() {
   }, [_vm._v("\n\t\t\t\tJES links\n\t\t\t")]), _vm._v(" "), _c("ul", [_c("NcAppNavigationItem", {
     staticClass: "werklinknavM",
     attrs: {
-      title: "Afgeschermde werklinks"
+      title: "Afgeschermde werklinks",
+      name: "Afgesschermde werklinks"
     },
     on: {
       click: function ($event) {
@@ -157079,4 +157080,4 @@ vue__WEBPACK_IMPORTED_MODULE_2__["default"].mixin({
 
 /******/ })()
 ;
-//# sourceMappingURL=jeslinks-main.js.map?v=91118c50cde00ec16211
+//# sourceMappingURL=jeslinks-main.js.map?v=3e5b84cc27658243a7b5

@@ -27,6 +27,7 @@ class UitconfigController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 * @NoCSRFRequired
 	 */
 	public function index() {
 		//throw new \Exception( "Controller op $userId");
