@@ -4,25 +4,26 @@
 			<div>
 				<div v-if="isAdmin"
 					class="adminvakje">
-					<h2 class="titelAN">Enkel voor admin</h2>
+					<h2 class="titelAN">
+						Enkel voor admin
+					</h2>
 					<ul>
-						<h2 class="titelAN">Links geven aan...</h2>
+						<h2 class="titelAN">
+							Links geven aan...
+						</h2>
 						<ActionInput
-							@change="perPersoon($event.target.value)"
-							icon="icon-search" />
-						<div style="width: 100%; display: block; margin-bottom: 10px;">
-						</div>
+							icon="icon-search"
+							@change="perPersoon($event.target.value)" />
+						<div style="width: 100%; display: block; margin-bottom: 10px;" />
 						<AppNavigationItem v-for="pnote in AanvraagPAr"
 							:key="pnote.id"
 							:title="pnote.voornaam + ' ' + pnote.achternaam"
-							@click="toonWLinksVan(pnote.uid, pnote.emailinvoer)">
-						</AppNavigationItem>
+							@click="toonWLinksVan(pnote.uid, pnote.emailinvoer)" />
 						<AppNavigationNew v-if="isAdmin"
 							text="Afgeschermde werklink aanmaken"
 							title="Afgeschermde werklink aanmaken"
 							button-class="icon-add"
-							@click="newWNote">
-						</AppNavigationNew>
+							@click="newWNote" />
 					</ul>
 				</div>
 				<h2 class="titelAN">
@@ -32,14 +33,12 @@
 					<AppNavigationItem
 						title="Afgeschermde werklinks"
 						class="werklinknavM"
-						@click="toonWLinks()">
-					</AppNavigationItem>
+						@click="toonWLinks()" />
 					<AppNavigationItem v-for="note in AanvraagAr"
 						:key="note.id"
 						:title="note.categorie"
 						:class="{active: currentNoteId === note.id}"
-						@click="toonLinks(note.categorie, JESL, 'jeslinks')">
-					</AppNavigationItem>
+						@click="toonLinks(note.categorie, JESL, 'jeslinks')" />
 				</ul>
 				<AppNavigationNew v-if="(isAdmin && AanvraagAr.length === 0)"
 					:disabled="false"
@@ -55,8 +54,7 @@
 						:key="notep.id"
 						:title="notep.categorie"
 						:class="{active: currentPNoteId === notep.id}"
-						@click="toonLinks(notep.categorie, notep.wie, 'persoonlijk')">
-					</AppNavigationItem>
+						@click="toonLinks(notep.categorie, notep.wie, 'persoonlijk')" />
 				</ul>
 				<AppNavigationNew v-if="AanvraagPrivAr.length === 0"
 					text="Een link toevoegen"
@@ -235,22 +233,24 @@
 			</div>
 			<div v-if="Jlinks"
 				class="vraagcontainer">
-				<h3 class="h3inline">JES links: {{ gekozenJCategorie }}</h3>
+				<h3 class="h3inline">
+					JES links: {{ gekozenJCategorie }}
+				</h3>
 				<input v-if="isAdmin"
 					:disabled="false"
 					type="button"
 					text="Een JES-link toevoegen"
 					button-id="new-Aanvragen-button"
 					class="icon-add toevoegknopje"
-					@click="newNote" />
+					@click="newNote">
 				<div v-for="(klik, k) in KlikbaarAr"
 					:key="k"
 					class="linklijn">
 					<a :href="klik.url" target="_blank">{{ klik.naam }}</a>
 					<input type="button"
-						@click="klembord(klik.url, $event)"
 						class="icon-clippy copknopje"
-						title="kopieer link naar klembord">
+						title="kopieer link naar klembord"
+						@click="klembord(klik.url, $event)">
 					<input v-if="isAdmin"
 						type="button"
 						class="icon-delete delknopje"
@@ -259,7 +259,9 @@
 			</div>
 			<div v-if="TKlinks"
 				class="vraagcontainer">
-				<h3 class="h3inline">Afgeschermde werk links toekennen</h3>
+				<h3 class="h3inline">
+					Afgeschermde werk links toekennen
+				</h3>
 				<div v-for="(klik, k) in KlikbaarAr"
 					:key="k"
 					class="linklijn">
@@ -283,12 +285,14 @@
 			</div>
 			<div v-if="Wlinks"
 				class="vraagcontainer">
-				<h3 class="h3inline">Jouw afgeschermde werk links</h3>
+				<h3 class="h3inline">
+					Jouw afgeschermde werk links
+				</h3>
 				<div v-for="(klik, k) in KlikbaarAr"
 					:key="k"
 					class="linklijn">
-					<a @click="naarWerklink(klik.url, klik.pasw)"
-						class="werklinknav">
+					<a class="werklinknav"
+						@click="naarWerklink(klik.url, klik.pasw)">
 						{{ klik.naam }}
 					</a>
 				</div>
@@ -299,29 +303,31 @@
 					target="_blank">
 					<input v-model="formLink"
 						type="hidden"
-						name="delink" />
+						name="delink">
 					<input v-model="formPW"
 						type="hidden"
-						name="paswoord" />
+						name="paswoord">
 					<input v-model="formEm"
 						type="hidden"
-						name="email" />
+						name="email">
 					<input type="hidden"
 						value="TOOB"
-						name="codepas" />
+						name="codepas">
 					<input type="submit"
-						value="test" />
+						value="test">
 				</form>
 			</div>
 			<div v-if="Plinks"
 				class="vraagcontainer">
-				<h3 class="h3inline">Jouw favorieten: {{ gekozenPCategorie }}</h3>
+				<h3 class="h3inline">
+					Jouw favorieten: {{ gekozenPCategorie }}
+				</h3>
 				<input :disabled="false"
 					type="button"
 					text="Een link toevoegen"
 					button-id="new-Aanvragen-button"
 					class="icon-add toevoegknopje"
-					@click="newPNote" />
+					@click="newPNote">
 				<div v-for="(klik, k) in KlikbaarAr"
 					:key="k"
 					class="linklijn">
@@ -347,9 +353,9 @@
 				value="Toon enkel wat nog vrij is"
 				@click="nogbeschikbaar(gekozencat)">
 			<AppNavigationItem v-for="mat in MateriaalAr"
-				@click="beschikbaar(mat.categorie, mat.id, mat.naam)"
 				:key="mat.id"
-				:title="mat.naam">
+				:title="mat.naam"
+				@click="beschikbaar(mat.categorie, mat.id, mat.naam)">
 				<template slot="actions">
 					<ActionButton icon="icon-details"
 						@click="meerinfo(mat.omschrijving)">
@@ -598,7 +604,7 @@ export default {
 
 		/**
 		 * Nieuwe werklink -> afgeschermd
-		**/
+		 */
 		newWNote() {
 			this.currentWNoteId = -1
 			this.priveAdmin = false
@@ -676,7 +682,8 @@ export default {
 		/**
 		 * Links opvragen van de gebruiker voor het linkse zijmenu
 		 * De eigenaar van JES en werklinks is ingegeven via jes.config.php
-		 * @param {object} note Note object
+		 *
+		 *
 		 */
 		 async overzichtLinks() {
 			this.updating = true
@@ -696,7 +703,7 @@ export default {
 		/**
 		 * Favorieten opvragen van de gebruiker voor het zijmenu links
 		 *
-		 * @param {object} note Note object
+		 *
 		 */
 		 async overzichtELinks() {
 			this.updating = true
@@ -714,7 +721,9 @@ export default {
 		/**
 		 * Links opvragen van de gebruiker voor midden
 		 *
-		 * @param {object} note Note object
+		 * @param {string} l - categorie
+		 * @param {string} w - wie
+		 * @param {string} s - s
 		 */
 		 async toonLinks(l, w, s) {
 			this.priveAdmin = false
@@ -753,7 +762,7 @@ export default {
 		/**
 		 * WerkLinks opvragen van de gebruiker voor midden
 		 *
-		 * @param {object} note Note object
+		 *
 		 */
 		 async toonWLinks() {
 			const wie = this.uid
@@ -775,7 +784,8 @@ export default {
 		/**
 		 * WerkLinks opvragen personeelslid voor controle welke hij/zij heeft
 		 *
-		 * @param {object} note Note object
+		 * @param {string} w - wie
+		 * @param {string} e - emailVan
 		 */
 		 async toonWLinksVan(w, e) {
 			const wie = w
@@ -824,7 +834,6 @@ export default {
 		/**
 		 * WerkLinks opvragen van 'wie' via config: alle afgeschermde werklinks voor midden
 		 *
-		 * @param {object} note Note object
 		 */
 		 async toekenbaar() {
 			const wie = this.JESL
@@ -851,6 +860,7 @@ export default {
 		 * Create a new note by sending the information to the server
 		 *
 		 * @param {object} note Note object
+		 * @param {string} s - s
 		 */
 		 async createNote(note, s) {
 			this.updating = true
@@ -955,8 +965,10 @@ export default {
 		},
 
 		/**
-	 	* Personeels-extra info: kijken of gebruiker admin is
-	 	*/
+		 * Personeels-extra info: kijken of gebruiker admin is
+		 *
+		 * @param {string} w - wie
+		 */
 		 async isPLadmin(w) {
 			const wie = w
 			const groep = this.JESmagadmin
@@ -970,8 +982,10 @@ export default {
 		},
 
 		/**
-	 	* Personeels-extra info (coordinator) ophalen in deze app niet in gebruik
-	 	*/
+		 * Personeels-extra info (coordinator) ophalen in deze app niet in gebruik
+		 *
+		 * @param {string} tc - teamleider
+		 */
 		async teamleidersinfo(tc) {
 			try {
 				const response = await axios.get(generateUrl(`/apps/personeelsadmin/personeelsinfo/zoekenTC/${tc}`, tc))
@@ -991,8 +1005,11 @@ export default {
 		},
 
 		/**
-	 	* Link schrappen
-	 	*/
+		 * Link schrappen
+		 *
+		 * @param {string} l - link_id
+		 * @param {string} w - w
+		 */
 		 async linkWeg(l, w) {
 			const id = l
 			try {
