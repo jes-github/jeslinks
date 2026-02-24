@@ -1,6 +1,6 @@
 <template>
-	<Content id="content" class="app-Werkstaat">
-		<AppNavigation>
+	<NcContent app-name="jeslinks" class="app-Werkstaat">
+		<NcAppNavigation>
 			<div>
 				<div v-if="isAdmin"
 					class="adminvakje">
@@ -11,15 +11,16 @@
 						<h2 class="titelAN">
 							Links geven aan...
 						</h2>
-						<ActionInput
+						<NcActionInput
 							icon="icon-search"
 							@change="perPersoon($event.target.value)" />
 						<div style="width: 100%; display: block; margin-bottom: 10px;" />
-						<AppNavigationItem v-for="pnote in AanvraagPAr"
+						<NcAppNavigationItem v-for="pnote in AanvraagPAr"
 							:key="pnote.id"
 							:title="pnote.voornaam + ' ' + pnote.achternaam"
+							:name="pnote.voornaam + ' ' + pnote.achternaam"
 							@click="toonWLinksVan(pnote.uid, pnote.emailinvoer)" />
-						<AppNavigationNew v-if="isAdmin"
+						<NcAppNavigationNew v-if="isAdmin"
 							text="Afgeschermde werklink aanmaken"
 							title="Afgeschermde werklink aanmaken"
 							button-class="icon-add"
@@ -30,17 +31,19 @@
 					JES links
 				</h2>
 				<ul>
-					<AppNavigationItem
+					<NcAppNavigationItem
 						title="Afgeschermde werklinks"
+						name="Afgeschermde werklinks"
 						class="werklinknavM"
 						@click="toonWLinks()" />
-					<AppNavigationItem v-for="note in AanvraagAr"
+					<NcAppNavigationItem v-for="note in AanvraagAr"
 						:key="note.id"
 						:title="note.categorie"
+						:name="note.categorie"
 						:class="{active: currentNoteId === note.id}"
 						@click="toonLinks(note.categorie, JESL, 'jeslinks')" />
 				</ul>
-				<AppNavigationNew v-if="(isAdmin && AanvraagAr.length === 0)"
+				<NcAppNavigationNew v-if="(isAdmin && AanvraagAr.length === 0)"
 					:disabled="false"
 					text="Een JES-link toevoegen"
 					button-id="new-Aanvragen-button"
@@ -50,13 +53,14 @@
 					Jouw favorieten
 				</h2>
 				<ul>
-					<AppNavigationItem v-for="notep in AanvraagPrivAr"
+					<NcAppNavigationItem v-for="notep in AanvraagPrivAr"
 						:key="notep.id"
 						:title="notep.categorie"
+						:name="notep.categorie"
 						:class="{active: currentPNoteId === notep.id}"
 						@click="toonLinks(notep.categorie, notep.wie, 'persoonlijk')" />
 				</ul>
-				<AppNavigationNew v-if="AanvraagPrivAr.length === 0"
+				<NcAppNavigationNew v-if="AanvraagPrivAr.length === 0"
 					text="Een link toevoegen"
 					:disabled="false"
 					button-id="new-Aanvragen-button"
@@ -64,24 +68,24 @@
 					@click="newPNote" />
 			</div>
 			<template #footer>
-				<AppNavigationSettings title="meer">
+				<NcAppNavigationSettings title="meer">
 					<ul>
-						<AppNavigationItem
+						<NcAppNavigationItem
 							title="eerst opvragen..."
 							@click="toekenbaar">
 							<template slot="actions">
-								<ActionButton
+								<NcActionButton
 									icon="icon-info"
 									@click="toonConfigWLinks">
 									dan tonen...
-								</ActionButton>
+								</NcActionButton>
 							</template>
-						</AppNavigationItem>
+						</NcAppNavigationItem>
 					</ul>
-				</AppNavigationSettings>
+				</NcAppNavigationSettings>
 			</template>
-		</AppNavigation>
-		<AppContent>
+		</NcAppNavigation>
+		<NcAppContent>
 			<h1>
 				JES links en rechts...
 			</h1>
@@ -342,8 +346,8 @@
 						@click="linkWeg(klik.id, 'persoonlijk')">
 				</div>
 			</div>
-		</AppContent>
-		<AppSidebar
+		</NcAppContent>
+		<NcAppSidebar
 			v-show="show"
 			title="Reserveerbaar:"
 			@close="close">
@@ -352,35 +356,34 @@
 				style="margin-left:10px"
 				value="Toon enkel wat nog vrij is"
 				@click="nogbeschikbaar(gekozencat)">
-			<AppNavigationItem v-for="mat in MateriaalAr"
+			<NcAppNavigationItem v-for="mat in MateriaalAr"
 				:key="mat.id"
 				:title="mat.naam"
+				:name="mat.naam"
 				@click="beschikbaar(mat.categorie, mat.id, mat.naam)">
 				<template slot="actions">
-					<ActionButton icon="icon-details"
+					<NcActionButton icon="icon-details"
 						@click="meerinfo(mat.omschrijving)">
 						{{ mat.omschrijving }}
-					</ActionButton>
+					</NcActionButton>
 				</template>
-			</AppNavigationItem>
-		</AppSidebar>
-	</Content>
+			</NcAppNavigationItem>
+		</NcAppSidebar>
+	</NcContent>
 </template>
 
 <script>
-import ActionButton from '@nextcloud/vue/dist/Components/ActionButton'
-import AppContent from '@nextcloud/vue/dist/Components/AppContent'
-import AppNavigation from '@nextcloud/vue/dist/Components/AppNavigation'
-import AppNavigationItem from '@nextcloud/vue/dist/Components/AppNavigationItem'
-import AppNavigationSettings from '@nextcloud/vue/dist/Components/AppNavigationSettings'
-import AppNavigationNew from '@nextcloud/vue/dist/Components/AppNavigationNew'
-import AppSidebar from '@nextcloud/vue/dist/Components/AppSidebar'
-// import UserBubble from '@nextcloud/vue/dist/Components/UserBubble'
-// import Actions from '@nextcloud/vue/dist/Components/Actions'
-// import ActionCheckbox from '@nextcloud/vue/dist/Components/ActionCheckbox'
-import ActionInput from '@nextcloud/vue/dist/Components/ActionInput'
-// import Multiselect from '@nextcloud/vue/dist/Components/Multiselect'
-// import DatetimePicker from '@nextcloud/vue/dist/Components/DatetimePicker'
+import {
+	NcContent,
+	NcActionButton,
+	NcAppContent,
+	NcAppNavigation,
+	NcAppNavigationItem, 
+	NcAppNavigationSettings,
+	NcAppNavigationNew,
+	NcAppSidebar,
+} from '@nextcloud/vue'
+
 import '@nextcloud/dialogs/styles/toast.scss'
 import { generateUrl } from '@nextcloud/router'
 import { showError, showSuccess } from '@nextcloud/dialogs'
@@ -392,18 +395,17 @@ import axios from '@nextcloud/axios'
 export default {
 	name: 'App',
 	components: {
-		ActionButton,
-		AppContent,
-		AppNavigation,
-		AppSidebar,
-		AppNavigationItem,
-		AppNavigationSettings,
-		AppNavigationNew,
+		NcActionButton,
+		NcAppContent,
+		NcAppNavigation,
+		NcAppSidebar,
+		NcAppNavigationItem,
+		NcAppNavigationSettings,
+		NcAppNavigationNew,
 		// UserBubble,
 		// DatetimePicker,
 		// Actions,
 		// ActionCheckbox,
-		ActionInput,
 		// Multiselect,
 		// NcButton,
 		// CheckboxRadioSwitch,
