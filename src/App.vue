@@ -395,6 +395,7 @@ import axios from '@nextcloud/axios'
 export default {
 	name: 'App',
 	components: {
+		NcContent,
 		NcActionButton,
 		NcAppContent,
 		NcAppNavigation,
