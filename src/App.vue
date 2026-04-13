@@ -376,6 +376,7 @@
 import {
 	NcContent,
 	NcActionButton,
+	NcActionInput,
 	NcAppContent,
 	NcAppNavigation,
 	NcAppNavigationItem, 
@@ -397,6 +398,7 @@ export default {
 	components: {
 		NcContent,
 		NcActionButton,
+		NcActionInput,
 		NcAppContent,
 		NcAppNavigation,
 		NcAppSidebar,
